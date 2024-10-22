@@ -1,4 +1,17 @@
 package cfa.fishing.fishing_store_app.service.product;
 
-public class ProductService {
+import cfa.fishing.fishing_store_app.dto.request.ProductRequest;
+import cfa.fishing.fishing_store_app.dto.response.ProductResponse;
+import cfa.fishing.fishing_store_app.entity.product.ProductCategory;
+import java.util.List;
+
+public interface ProductService {
+    ProductResponse createProduct(ProductRequest request);
+    ProductResponse updateProduct(Long id, ProductRequest request);
+    ProductResponse getProduct(Long id);
+    List<ProductResponse> getAllProducts();
+    List<ProductResponse> getProductsByCategory(ProductCategory category);
+    void deleteProduct(Long id);
+    List<ProductResponse> searchProducts(String keyword);
+    void updateStock(Long id, Integer quantity);
 }

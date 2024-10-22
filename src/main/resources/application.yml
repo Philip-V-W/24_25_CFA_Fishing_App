@@ -10,12 +10,17 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop  # Changed from update to create-drop for development
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MariaDBDialect
         format_sql: true
     show-sql: true
+    defer-datasource-initialization: true  # Allows data.sql to run after Hibernate initialization
+
+  sql:
+    init:
+      mode: always  # Enables SQL initialization
 
   mail:
     host: smtp.gmail.com
