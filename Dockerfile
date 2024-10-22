@@ -17,9 +17,6 @@ RUN bash -c "source ${SDKMAN_DIR}/bin/sdkman-init.sh && sdk install java 17.0.8-
 ENV JAVA_HOME="${SDKMAN_DIR}/candidates/java/current"
 ENV PATH="${PATH}:${JAVA_HOME}/bin"
 
-# Verify Java installation
-RUN java -version
-
 # Install Gradle
 RUN bash -c "source ${SDKMAN_DIR}/bin/sdkman-init.sh && sdk install gradle"
 
@@ -27,20 +24,13 @@ RUN bash -c "source ${SDKMAN_DIR}/bin/sdkman-init.sh && sdk install gradle"
 ENV GRADLE_HOME="${SDKMAN_DIR}/candidates/gradle/current"
 ENV PATH="${PATH}:${GRADLE_HOME}/bin"
 
-# Install Spring Boot CLI
-RUN bash -c "source ${SDKMAN_DIR}/bin/sdkman-init.sh && sdk install springboot"
-
 # Create app directory
 WORKDIR /app
 
-# Initialize Spring Boot project
-RUN bash -c "source ${SDKMAN_DIR}/bin/sdkman-init.sh && spring init --dependencies=web,data-jpa,thymeleaf,mariadb,devtools,webflux ./"
-
-# Build the project
-RUN ./gradlew build -x test
+# The project files will be mounted via volume in docker-compose
 
 # Expose port
 EXPOSE 8080
 
 # Run the application
-CMD ["java", "-jar", "build/libs/demo-0.0.1-SNAPSHOT.jar"]
+CMD ["./gradlew", "bootRun"]

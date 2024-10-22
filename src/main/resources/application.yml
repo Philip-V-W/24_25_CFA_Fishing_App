@@ -1,0 +1,55 @@
+spring:
+  application:
+    name: 24_25_CFA_Fishing_App
+
+  datasource:
+    url: jdbc:mariadb://db:3306/fishingstore
+    username: fishinguser
+    password: fishing2024
+    driver-class-name: org.mariadb.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MariaDBDialect
+        format_sql: true
+    show-sql: true
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+  security:
+    jwt:
+      secret: ${JWT_SECRET:default-secret-key-which-should-be-replaced-in-production}
+      expiration: 86400000  # 24 hours in milliseconds
+
+server:
+  port: 8080
+  error:
+    include-message: always
+    include-binding-errors: always
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
+
+# Custom application properties
+app:
+  upload:
+    dir: ${user.home}/fishing-store/uploads
+  cors:
+    allowed-origins: http://localhost:3000,http://localhost:8080
