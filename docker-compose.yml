@@ -1,0 +1,46 @@
+# Spring Boot orchestration
+volumes:
+  fishingdb:
+
+networks:
+  fishingnetwork:
+
+services:
+
+  # Spring Boot application container
+  fishingapp:
+    build:
+      context: ./
+    container_name: fishing-store-app
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./:/app
+      - ./gradle-cache:/root/.gradle
+    depends_on:
+      - db
+    networks:
+      - fishingnetwork
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mariadb://db:3306/fishingstore
+      SPRING_DATASOURCE_USERNAME: fishinguser
+      SPRING_DATASOURCE_PASSWORD: fishing2024
+    tty: true
+
+  # MariaDB container
+  db:
+    image: mariadb:latest
+    container_name: fishingdb
+    ports:
+      - "3306:3306"
+    environment:
+      MARIADB_ROOT_PASSWORD: rootpassword
+      MARIADB_DATABASE: fishingstore
+      MARIADB_USER: fishinguser
+      MARIADB_PASSWORD: fishing2024
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    volumes:
+      - fishingdb:/var/lib/mysql
+    networks:
+      - fishingnetwork
