@@ -1,4 +1,10 @@
 package cfa.fishing.fishing_store_app.entity.order;
 
-public class OrderStatus {
+public enum OrderStatus {
+    PENDING,
+    PAID,
+    PROCESSING,
+    SHIPPED,
+    DELIVERED,
+    CANCELLED
 }
