@@ -7,11 +7,9 @@ import cfa.fishing.fishing_store_app.entity.user.Role;
 import cfa.fishing.fishing_store_app.entity.user.User;
 import cfa.fishing.fishing_store_app.repository.UserRepository;
 import cfa.fishing.fishing_store_app.security.JwtTokenProvider;
-import cfa.fishing.fishing_store_app.security.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -21,9 +19,8 @@ public class AuthenticationService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtTokenProvider jwtService;
     private final AuthenticationManager authenticationManager;
-    private final UserDetailsServiceImpl userDetailsService;
 
     public AuthenticationResponse register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
@@ -40,9 +37,11 @@ public class AuthenticationService {
 
         userRepository.save(user);
 
-        UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
-        var jwt = jwtTokenProvider.generateToken(userDetails);
-        return new AuthenticationResponse(jwt);
+        var jwt = jwtService.generateToken(user);
+        return AuthenticationResponse.builder()
+                .token(jwt)
+                .email(user.getEmail())
+                .build();
     }
 
     public AuthenticationResponse login(LoginRequest request) {
@@ -56,8 +55,10 @@ public class AuthenticationService {
         var user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
-        var jwt = jwtTokenProvider.generateToken(userDetails);
-        return new AuthenticationResponse(jwt);
+        var jwt = jwtService.generateToken(user);
+        return AuthenticationResponse.builder()
+                .token(jwt)
+                .email(user.getEmail())
+                .build();
     }
 }

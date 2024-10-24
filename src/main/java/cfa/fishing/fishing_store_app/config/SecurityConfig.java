@@ -24,8 +24,9 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/products/**").permitAll() // Temporarily permit all product endpoints
+                        .requestMatchers("/**").permitAll()
+//                        .requestMatchers("/api/auth/**").permitAll()
+//                        .requestMatchers("/api/products/**").permitAll() // Temporarily permit all product endpoints
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
