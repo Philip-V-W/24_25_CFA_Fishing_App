@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
-@Table(name = "fishing_permits")
+@Table(name = "permits")
 public class FishingPermit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
