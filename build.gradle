@@ -38,6 +38,9 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-mail'       // For email notifications
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0' // For API documentation
 
+	// Stripe dependency
+	implementation 'com.stripe:stripe-java:24.0.0' // For payment processing
+
 	// Utility dependencies
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'

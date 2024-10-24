@@ -58,3 +58,7 @@ app:
     dir: ${user.home}/fishing-store/uploads
   cors:
     allowed-origins: http://localhost:3000,http://localhost:8080
+
+# Stripe API keys
+stripe:
+  secret-key: ${STRIPE_SECRET_KEY}

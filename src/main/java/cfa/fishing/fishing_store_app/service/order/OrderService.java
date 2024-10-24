@@ -3,6 +3,7 @@ package cfa.fishing.fishing_store_app.service.order;
 import cfa.fishing.fishing_store_app.dto.request.OrderRequest;
 import cfa.fishing.fishing_store_app.dto.response.OrderItemResponse;
 import cfa.fishing.fishing_store_app.dto.response.OrderResponse;
+import cfa.fishing.fishing_store_app.dto.response.PaymentResponse;
 import cfa.fishing.fishing_store_app.entity.order.Order;
 import cfa.fishing.fishing_store_app.entity.order.OrderItem;
 import cfa.fishing.fishing_store_app.entity.order.OrderStatus;
@@ -12,6 +13,7 @@ import cfa.fishing.fishing_store_app.exception.ResourceNotFoundException;
 import cfa.fishing.fishing_store_app.repository.OrderRepository;
 import cfa.fishing.fishing_store_app.repository.ProductRepository;
 import cfa.fishing.fishing_store_app.repository.UserRepository;
+import cfa.fishing.fishing_store_app.service.payment.PaymentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -28,13 +30,12 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
+    private final PaymentService paymentService;
 
     @Transactional
-    public OrderResponse createOrder(String userEmail, OrderRequest request) {
+    public PaymentResponse createOrder(String userEmail, OrderRequest request) {
         User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-
-        validateOrderRequest(request);
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         Order order = new Order();
         order.setUser(user);
@@ -50,14 +51,27 @@ public class OrderService {
 
             OrderItem orderItem = new OrderItem(product, itemRequest.getQuantity());
             order.addItem(orderItem);
-
-            // Update product stock
-            product.setStockQuantity(product.getStockQuantity() - itemRequest.getQuantity());
-            productRepository.save(product);
         });
 
         Order savedOrder = orderRepository.save(order);
-        return mapToOrderResponse(savedOrder);
+        return paymentService.createPaymentIntent(savedOrder);
+    }
+
+    @Transactional
+    public OrderResponse confirmPayment(Long orderId, String paymentIntentId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found"));
+
+        order.setStatus(OrderStatus.PAID);
+
+        // Update product stock
+        order.getItems().forEach(item -> {
+            Product product = item.getProduct();
+            product.setStockQuantity(product.getStockQuantity() - item.getQuantity());
+            productRepository.save(product);
+        });
+
+        return mapToOrderResponse(orderRepository.save(order));
     }
 
     @Transactional

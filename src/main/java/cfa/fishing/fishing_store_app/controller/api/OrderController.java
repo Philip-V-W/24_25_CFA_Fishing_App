@@ -2,6 +2,7 @@ package cfa.fishing.fishing_store_app.controller.api;
 
 import cfa.fishing.fishing_store_app.dto.request.OrderRequest;
 import cfa.fishing.fishing_store_app.dto.response.OrderResponse;
+import cfa.fishing.fishing_store_app.dto.response.PaymentResponse;
 import cfa.fishing.fishing_store_app.entity.order.OrderStatus;
 import cfa.fishing.fishing_store_app.service.order.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -19,25 +20,24 @@ public class OrderController {
 
     private final OrderService orderService;
 
-    @PostMapping
-    public ResponseEntity<OrderResponse> createOrder(
-            @AuthenticationPrincipal UserDetails userDetails,
-            @RequestBody OrderRequest request) {
-        OrderResponse order = orderService.createOrder(userDetails.getUsername(), request);
-        return ResponseEntity.ok(order);
-    }
-
     @GetMapping
     public ResponseEntity<List<OrderResponse>> getUserOrders(
             @AuthenticationPrincipal UserDetails userDetails) {
         return ResponseEntity.ok(orderService.getUserOrders(userDetails.getUsername()));
     }
 
-    @GetMapping("/{orderId}")
-    public ResponseEntity<OrderResponse> getOrder(
+    @PostMapping
+    public ResponseEntity<PaymentResponse> createOrder(
             @AuthenticationPrincipal UserDetails userDetails,
-            @PathVariable Long orderId) {
-        return ResponseEntity.ok(orderService.getOrder(userDetails.getUsername(), orderId));
+            @RequestBody OrderRequest request) {
+        return ResponseEntity.ok(orderService.createOrder(userDetails.getUsername(), request));
+    }
+
+    @PostMapping("/{orderId}/confirm-payment")
+    public ResponseEntity<OrderResponse> confirmPayment(
+            @PathVariable Long orderId,
+            @RequestParam String paymentIntentId) {
+        return ResponseEntity.ok(orderService.confirmPayment(orderId, paymentIntentId));
     }
 
     @PatchMapping("/{orderId}/cancel")
