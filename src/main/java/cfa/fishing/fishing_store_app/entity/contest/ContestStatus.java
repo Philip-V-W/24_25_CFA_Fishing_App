@@ -1,4 +1,8 @@
 package cfa.fishing.fishing_store_app.entity.contest;
 
-public class ContestStatus {
+public enum ContestStatus {
+    UPCOMING,
+    IN_PROGRESS,
+    COMPLETED,
+    CANCELLED
 }
