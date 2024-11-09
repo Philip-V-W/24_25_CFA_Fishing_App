@@ -15,4 +15,7 @@ public interface ContestRepository extends JpaRepository<Contest, Long> {
 
     @Query("SELECT c FROM Contest c WHERE c.startDate <= :now AND c.endDate >= :now")
     List<Contest> findOngoingContests(LocalDateTime now);
+
+    @Query("SELECT COUNT(c) FROM Contest c WHERE c.startDate > ?1")
+    long countUpcomingContests(LocalDateTime date);
 }

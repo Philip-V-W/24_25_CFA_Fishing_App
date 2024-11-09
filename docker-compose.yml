@@ -12,10 +12,12 @@ services:
       context: ./
     container_name: fishing-store-app
     ports:
-      - "8088:8080"
+      - "8080:8080"
+      - "35729:35729"
     volumes:
       - ./:/app
       - ./gradle-cache:/root/.gradle
+      - ./src:/app/src
     depends_on:
       - db
     networks:
@@ -25,6 +27,10 @@ services:
       SPRING_DATASOURCE_USERNAME: ${DB_USER}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
       STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+      SPRING_DEVTOOLS_REMOTE_SECRET: ${SPRING_DEVTOOLS_SECRET}
+      SPRING_DEVTOOLS_LIVERELOAD_ENABLED: "true"
+      SPRING_DEVTOOLS_RESTART_ENABLED: "true"
+      SPRING_THYMELEAF_CACHE: "false"
     tty: true
 
   # MariaDB container

@@ -1,4 +1,3 @@
-// src/main/java/cfa/fishing/fishing_store_app/config/AuthenticationConfig.java
 package cfa.fishing.fishing_store_app.config;
 
 import cfa.fishing.fishing_store_app.repository.UserRepository;

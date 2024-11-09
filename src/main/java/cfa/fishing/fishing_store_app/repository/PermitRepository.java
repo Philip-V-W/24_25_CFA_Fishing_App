@@ -19,4 +19,7 @@ public interface PermitRepository extends JpaRepository<FishingPermit, Long> {
     @Query("SELECT p FROM FishingPermit p WHERE p.user = ?1 AND p.status = 'APPROVED' " +
             "AND p.startDate <= ?2 AND p.endDate >= ?2")
     List<FishingPermit> findActivePermits(User user, LocalDate date);
+
+    @Query("SELECT COUNT(p) FROM FishingPermit p WHERE p.status = 'PENDING'")
+    long countPendingPermits();
 }

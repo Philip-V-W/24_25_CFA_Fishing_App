@@ -27,10 +27,16 @@ ENV PATH="${PATH}:${GRADLE_HOME}/bin"
 # Create app directory
 WORKDIR /app
 
-# The project files will be mounted via volume in docker-compose
+# Make gradlew executable explicitly
+COPY gradlew .
+RUN chmod +x gradlew
 
 # Expose port
 EXPOSE 8080
+EXPOSE 35729
 
 # Run the application
-CMD ["./gradlew", "bootRun"]
+CMD ["./gradlew", "bootRun", "--continuous"]
+
+
+

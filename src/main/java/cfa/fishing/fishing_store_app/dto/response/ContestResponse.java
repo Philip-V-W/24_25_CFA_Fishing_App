@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -23,5 +24,5 @@ public class ContestResponse {
     private BigDecimal entryFee;
     private ContestStatus status;
     private Integer currentParticipants;
-    private Boolean isRegistered;  // Whether the current user is registered
+    private Boolean isRegistered;
 }
