@@ -38,13 +38,6 @@ public class Product {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public Product(String name, BigDecimal price, ProductCategory category) {
-        this.name = name;
-        this.price = price;
-        this.category = category;
-        this.active = true;
-    }
-
     public Product(String name, String description, BigDecimal price,
                    Integer stockQuantity, ProductCategory category,
                    String imageUrl) {
