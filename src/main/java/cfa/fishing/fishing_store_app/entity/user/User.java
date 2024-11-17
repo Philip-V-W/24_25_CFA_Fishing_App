@@ -1,24 +1,25 @@
 package cfa.fishing.fishing_store_app.entity.user;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "users")
 public class User implements UserDetails {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -31,22 +32,17 @@ public class User implements UserDetails {
 
     private String firstName;
     private String lastName;
-    private String address;
     private String phoneNumber;
 
     @Enumerated(EnumType.STRING)
+    @Builder.Default
     private Role role = Role.CUSTOMER;
 
+    @Builder.Default
     private boolean active = true;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-
-    // Constructor with required fields
-    public User(String email, String password) {
-        this.email = email;
-        this.password = password;
-        this.active = true;
-    }
 
     @PrePersist
     protected void onCreate() {
@@ -59,7 +55,6 @@ public class User implements UserDetails {
         updatedAt = LocalDateTime.now();
     }
 
-    // UserDetails implementation
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
@@ -88,5 +83,19 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return active;
+    }
+
+    @Builder.Default
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Address> addresses = new HashSet<>();
+
+    public void addAddress(Address address) {
+        addresses.add(address);
+        address.setUser(this);
+    }
+
+    public void removeAddress(Address address) {
+        addresses.remove(address);
+        address.setUser(null);
     }
 }

@@ -1,5 +1,6 @@
 package cfa.fishing.fishing_store_app.repository;
 
+import cfa.fishing.fishing_store_app.dto.response.UserProfileResponse;
 import cfa.fishing.fishing_store_app.entity.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -16,4 +17,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("SELECT COUNT(u) FROM User u WHERE u.role = 'CUSTOMER' AND u.createdAt BETWEEN ?1 AND ?2")
     long countCustomersJoinedBetween(LocalDateTime start, LocalDateTime end);
+
+    @Query("SELECT u FROM User u WHERE u.email = :email")
+    Optional<User> findUserProfileByEmail(String email);
 }

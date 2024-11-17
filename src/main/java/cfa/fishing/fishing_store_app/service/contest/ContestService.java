@@ -13,6 +13,7 @@ import cfa.fishing.fishing_store_app.repository.ContestRegistrationRepository;
 import cfa.fishing.fishing_store_app.repository.ContestRepository;
 import cfa.fishing.fishing_store_app.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,6 +45,13 @@ public class ContestService {
         return mapToContestResponse(contestRepository.save(contest), null);
     }
 
+    @Transactional(readOnly = true)
+    public List<ContestResponse> getAllContests() {
+        return contestRepository.findAll().stream()
+                .map(contest -> mapToContestResponse(contest, null))
+                .collect(Collectors.toList());
+    }
+
     @Transactional
     public RegistrationResponse registerForContest(Long contestId, String userEmail) {
         Contest contest = contestRepository.findById(contestId)
@@ -63,6 +71,20 @@ public class ContestService {
                 .build();
 
         return mapToRegistrationResponse(registrationRepository.save(registration));
+    }
+
+    @Transactional(readOnly = true)
+    public ContestResponse getContestById(Long contestId, String userEmail) {
+        Contest contest = contestRepository.findById(contestId)
+                .orElseThrow(() -> new ResourceNotFoundException("Contest not found"));
+
+        User user = null;
+        if (userEmail != null) {
+            user = userRepository.findByEmail(userEmail)
+                    .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        }
+
+        return mapToContestResponse(contest, user);
     }
 
     public List<ContestResponse> getUpcomingContests(String userEmail) {
@@ -153,4 +175,31 @@ public class ContestService {
                 .status(registration.getStatus())
                 .build();
     }
+
+    @Transactional
+    public RegistrationResponse cancelRegistration(Long registrationId, String userEmail) {
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        ContestRegistration registration = registrationRepository.findById(registrationId)
+                .orElseThrow(() -> new ResourceNotFoundException("Registration not found"));
+
+        if (!registration.getUser().getId().equals(user.getId())) {
+            throw new AccessDeniedException("Not authorized to cancel this registration");
+        }
+
+        if (registration.getStatus() != RegistrationStatus.CONFIRMED &&
+                registration.getStatus() != RegistrationStatus.PENDING) {
+            throw new IllegalStateException("Registration cannot be cancelled in current status");
+        }
+
+        if (registration.getContest().getStartDate().isBefore(LocalDateTime.now())) {
+            throw new IllegalStateException("Cannot cancel registration after contest has started");
+        }
+
+        registration.setStatus(RegistrationStatus.CANCELLED);
+        return mapToRegistrationResponse(registrationRepository.save(registration));
+    }
+
+
 }

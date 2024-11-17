@@ -63,4 +63,10 @@ public class ProductController {
         productService.updateStock(id, quantity);
         return ResponseEntity.noContent().build();
     }
+
+    @PatchMapping("/{id}/toggle-status")
+    public ResponseEntity<Void> toggleProductStatus(@PathVariable Long id) {
+        productService.toggleProductStatus(id);
+        return ResponseEntity.noContent().build();
+    }
 }

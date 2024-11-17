@@ -14,6 +14,8 @@ public interface PermitRepository extends JpaRepository<FishingPermit, Long> {
     List<FishingPermit> findByUser(User user);
     List<FishingPermit> findByUserOrderByCreatedAtDesc(User user);
     List<FishingPermit> findByStatus(PermitStatus status);
+    List<FishingPermit> findByUserAndStatus(User user, PermitStatus status);
+    List<FishingPermit> findAllByOrderByCreatedAtDesc();
     Optional<FishingPermit> findByPermitNumber(String permitNumber);
 
     @Query("SELECT p FROM FishingPermit p WHERE p.user = ?1 AND p.status = 'APPROVED' " +

@@ -69,6 +69,12 @@ public class PermitService {
         return mapToPermitResponse(permitRepository.save(permit));
     }
 
+    public List<PermitResponse> getAllPermits() {
+        return permitRepository.findAllByOrderByCreatedAtDesc().stream()
+                .map(this::mapToPermitResponse)
+                .collect(Collectors.toList());
+    }
+
     public List<PermitResponse> getUserPermits(String userEmail) {
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
@@ -84,12 +90,21 @@ public class PermitService {
                 .orElseThrow(() -> new ResourceNotFoundException("Permit not found"));
     }
 
+    public List<PermitResponse> getPermitsByUserId(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        return permitRepository.findByUserOrderByCreatedAtDesc(user).stream()
+                .map(this::mapToPermitResponse)
+                .collect(Collectors.toList());
+    }
+
     private LocalDate calculateEndDate(LocalDate startDate, PermitType type) {
         return switch (type) {
             case DAILY -> startDate;
             case WEEKLY -> startDate.plusDays(7);
             case MONTHLY -> startDate.plusMonths(1);
             case ANNUAL -> startDate.plusYears(1);
+            case LIFETIME -> null;
         };
     }
 
@@ -99,6 +114,7 @@ public class PermitService {
             case WEEKLY -> new BigDecimal("45.00");
             case MONTHLY -> new BigDecimal("100.00");
             case ANNUAL -> new BigDecimal("250.00");
+            case LIFETIME -> new BigDecimal("1000.00");
         };
     }
 

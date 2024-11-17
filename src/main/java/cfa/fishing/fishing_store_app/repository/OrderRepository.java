@@ -15,7 +15,11 @@ import java.util.Map;
 public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findByUser(User user);
 
+    List<Order> findAllByOrderByOrderDateDesc();
+
     List<Order> findByUserOrderByOrderDateDesc(User user);
+
+    List<Order> findByOrderDateBetween(LocalDateTime start, LocalDateTime end);
 
     long countByOrderDateBetween(LocalDateTime start, LocalDateTime end);
 

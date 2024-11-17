@@ -1,6 +1,7 @@
 package cfa.fishing.fishing_store_app.service.admin;
 
 import cfa.fishing.fishing_store_app.dto.response.*;
+import cfa.fishing.fishing_store_app.entity.order.Order;
 import cfa.fishing.fishing_store_app.entity.order.OrderStatus;
 import cfa.fishing.fishing_store_app.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -61,6 +62,38 @@ public class AdminDashboardService {
                 .revenueByCategory(getRevenueByCategory(startDate, endDate))
                 .topCustomers(getTopCustomers(startDate, endDate))
                 .build();
+    }
+
+    public List<OrderResponse> getAllOrders(LocalDate startDate, LocalDate endDate) {
+        List<Order> orders;
+        if (startDate != null && endDate != null) {
+            orders = orderRepository.findByOrderDateBetween(
+                    startDate.atStartOfDay(),
+                    endDate.atTime(23, 59, 59));
+        } else {
+            orders = orderRepository.findAllByOrderByOrderDateDesc();
+        }
+
+        return orders.stream()
+                .map(order -> OrderResponse.builder()
+                        .id(order.getId())
+                        .customerEmail(order.getUser().getEmail())
+                        .orderDate(order.getOrderDate())
+                        .status(order.getStatus())
+                        .totalAmount(order.getTotalAmount())
+                        .shippingAddress(order.getShippingAddress())
+                        .trackingNumber(order.getTrackingNumber())
+                        .items(order.getItems().stream()
+                                .map(item -> OrderItemResponse.builder()
+                                        .productId(item.getProduct().getId())
+                                        .productName(item.getProduct().getName())
+                                        .quantity(item.getQuantity())
+                                        .price(item.getPrice())
+                                        .subtotal(item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
+                                        .build())
+                                .collect(Collectors.toList()))
+                        .build())
+                .collect(Collectors.toList());
     }
 
     private ProductCategoryStatsResponse getTopCategories(LocalDate startDate, LocalDate endDate) {

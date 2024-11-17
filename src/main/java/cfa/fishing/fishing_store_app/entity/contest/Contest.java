@@ -33,10 +33,12 @@ public class Contest {
     private Integer maxParticipants;
     private BigDecimal entryFee;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     private ContestStatus status = ContestStatus.UPCOMING;
 
-    @OneToMany(mappedBy = "contest", cascade = CascadeType.ALL)
+    @Builder.Default
+    @OneToMany(mappedBy = "contest", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ContestRegistration> registrations = new HashSet<>();
 
     private LocalDateTime createdAt;
@@ -52,4 +54,6 @@ public class Contest {
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
     }
+
+
 }

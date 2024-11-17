@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
@@ -22,6 +23,9 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     @Query("SELECT p FROM Product p WHERE p.active = true AND p.name LIKE %:keyword%")
     List<Product> searchProducts(@Param("keyword") String keyword);
+
+    @Query("SELECT p FROM Product p WHERE p.name = :name")
+    Optional<Product> findByName(@Param("name") String name);
 
     @Query("SELECT p FROM Product p WHERE p.active = true AND p.category = :category AND p.stockQuantity > 0")
     List<Product> findAvailableProductsByCategory(@Param("category") ProductCategory category);
@@ -60,4 +64,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             "LEFT JOIN OrderItem oi ON p.id = oi.product.id " +
             "GROUP BY p.category")
     List<Map<String, Object>> findCategoryStats(LocalDateTime start, LocalDateTime end);
+
+    @Query("SELECT p FROM Product p")
+    List<Product> findAllProducts();
 }

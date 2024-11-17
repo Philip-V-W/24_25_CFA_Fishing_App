@@ -27,8 +27,10 @@ public class ContestRegistration {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @Builder.Default
     private LocalDateTime registrationDate = LocalDateTime.now();
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     private RegistrationStatus status = RegistrationStatus.PENDING;
 

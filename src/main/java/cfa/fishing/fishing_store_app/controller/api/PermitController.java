@@ -25,27 +25,14 @@ public class PermitController {
         return ResponseEntity.ok(permitService.createPermit(userDetails.getUsername(), request));
     }
 
-    @GetMapping
-    public ResponseEntity<List<PermitResponse>> getUserPermits(
-            @AuthenticationPrincipal UserDetails userDetails) {
-        return ResponseEntity.ok(permitService.getUserPermits(userDetails.getUsername()));
-    }
-
-    @GetMapping("/{permitId}")
+    @GetMapping("/{permitId:\\d+}")
     public ResponseEntity<PermitResponse> getPermit(@PathVariable Long permitId) {
         return ResponseEntity.ok(permitService.getPermit(permitId));
     }
 
-    // Admin endpoints
-    @PatchMapping("/{permitId}/approve")
-    public ResponseEntity<PermitResponse> approvePermit(@PathVariable Long permitId) {
-        return ResponseEntity.ok(permitService.approvePermit(permitId));
-    }
-
-    @PatchMapping("/{permitId}/reject")
-    public ResponseEntity<PermitResponse> rejectPermit(
-            @PathVariable Long permitId,
-            @RequestParam String reason) {
-        return ResponseEntity.ok(permitService.rejectPermit(permitId, reason));
+    @GetMapping("/user")
+    public ResponseEntity<List<PermitResponse>> getUserPermits(
+            @AuthenticationPrincipal UserDetails userDetails) {
+        return ResponseEntity.ok(permitService.getUserPermits(userDetails.getUsername()));
     }
 }

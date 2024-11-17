@@ -10,6 +10,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
@@ -37,6 +41,14 @@ public class ContestController {
         return ResponseEntity.ok(contestService.getOngoingContests(userDetails.getUsername()));
     }
 
+    @GetMapping("/{contestId}")
+    public ResponseEntity<ContestResponse> getContestById(
+            @PathVariable Long contestId,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        String username = (userDetails != null) ? userDetails.getUsername() : null;
+        return ResponseEntity.ok(contestService.getContestById(contestId, username));
+    }
+
     @PostMapping("/{contestId}/register")
     public ResponseEntity<RegistrationResponse> registerForContest(
             @PathVariable Long contestId,
@@ -55,5 +67,12 @@ public class ContestController {
             @PathVariable Long contestId,
             @RequestParam ContestStatus status) {
         return ResponseEntity.ok(contestService.updateContestStatus(contestId, status));
+    }
+
+    @PatchMapping("/registrations/{registrationId}/cancel")
+    public ResponseEntity<RegistrationResponse> cancelRegistration(
+            @PathVariable Long registrationId,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        return ResponseEntity.ok(contestService.cancelRegistration(registrationId, userDetails.getUsername()));
     }
 }

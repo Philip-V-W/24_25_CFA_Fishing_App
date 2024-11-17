@@ -39,6 +39,48 @@ spring:
       secret: ${JWT_SECRET:default-secret-key-which-should-be-replaced-in-production}
       expiration: 86400000  # 24 hours in milliseconds
 
+  # Hot reload
+  devtools:
+    livereload:
+      enabled: true
+      port: 35729
+    restart:
+      enabled: true
+      poll-interval: 1s
+      quiet-period: 400ms
+      additional-paths:
+        - src/main/java
+        - src/main/resources/templates
+        - src/main/resources/static
+    remote:
+      secret: ${SPRING_DEVTOOLS_SECRET:secret2024}
+      restart:
+        enabled: true
+
+  # thymeleaf
+#  thymeleaf:
+#    cache: false
+#    prefix: file:src/main/resources/templates/
+#    mode: HTML
+
+#  web:
+#    resources:
+#      chain:
+#        strategy:
+#          content:
+#            enabled: true
+#            paths: /**
+#      static-locations: classpath:/static/
+
+mvc:
+  pathmatch:
+    matching-strategy: path-pattern-parser
+  cors:
+    allowed-origins: http://localhost:3000  # Next.js default port
+    allowed-methods: GET,POST,PUT,DELETE,OPTIONS
+    allowed-headers: "*"
+    allow-credentials: true
+
 server:
   port: 8080
   error:
@@ -62,3 +104,10 @@ app:
 # Stripe API keys
 stripe:
   secret-key: ${STRIPE_SECRET_KEY}
+
+# Logging
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.web: DEBUG
+    cfa.fishing.fishing_store_app: DEBUG

@@ -20,7 +20,7 @@ public class OrderController {
 
     private final OrderService orderService;
 
-    @GetMapping
+    @GetMapping()
     public ResponseEntity<List<OrderResponse>> getUserOrders(
             @AuthenticationPrincipal UserDetails userDetails) {
         return ResponseEntity.ok(orderService.getUserOrders(userDetails.getUsername()));
@@ -45,13 +45,5 @@ public class OrderController {
             @AuthenticationPrincipal UserDetails userDetails,
             @PathVariable Long orderId) {
         return ResponseEntity.ok(orderService.cancelOrder(userDetails.getUsername(), orderId));
-    }
-
-    // Admin endpoints
-    @PatchMapping("/{orderId}/status")
-    public ResponseEntity<OrderResponse> updateOrderStatus(
-            @PathVariable Long orderId,
-            @RequestParam OrderStatus status) {
-        return ResponseEntity.ok(orderService.updateOrderStatus(orderId, status));
     }
 }

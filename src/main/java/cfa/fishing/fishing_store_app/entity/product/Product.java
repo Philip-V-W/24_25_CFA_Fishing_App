@@ -38,7 +38,6 @@ public class Product {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    // Constructor with required fields
     public Product(String name, BigDecimal price, ProductCategory category) {
         this.name = name;
         this.price = price;
@@ -46,7 +45,6 @@ public class Product {
         this.active = true;
     }
 
-    // Full constructor except id and timestamps
     public Product(String name, String description, BigDecimal price,
                    Integer stockQuantity, ProductCategory category,
                    String imageUrl) {
@@ -69,4 +67,6 @@ public class Product {
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
     }
+
+
 }

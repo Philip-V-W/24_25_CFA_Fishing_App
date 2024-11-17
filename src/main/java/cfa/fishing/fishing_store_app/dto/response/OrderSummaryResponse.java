@@ -8,19 +8,16 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderResponse {
+public class OrderSummaryResponse {
     private Long id;
-    private String customerEmail;
     private LocalDateTime orderDate;
     private OrderStatus status;
     private BigDecimal totalAmount;
-    private String shippingAddress;
     private String trackingNumber;
-    private List<OrderItemResponse> items;
+    private int itemCount;
 }

@@ -1,9 +1,12 @@
 package cfa.fishing.fishing_store_app.repository;
 
 import cfa.fishing.fishing_store_app.entity.contest.Contest;
+import cfa.fishing.fishing_store_app.entity.contest.ContestRegistration;
 import cfa.fishing.fishing_store_app.entity.contest.ContestStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -18,4 +21,9 @@ public interface ContestRepository extends JpaRepository<Contest, Long> {
 
     @Query("SELECT COUNT(c) FROM Contest c WHERE c.startDate > ?1")
     long countUpcomingContests(LocalDateTime date);
+
+    @Query("SELECT cr FROM ContestRegistration cr WHERE cr.user.id = :userId AND cr.contest.startDate > CURRENT_DATE")
+    List<ContestRegistration> findUserUpcomingContests(@Param("userId") Long userId);
+
+
 }
