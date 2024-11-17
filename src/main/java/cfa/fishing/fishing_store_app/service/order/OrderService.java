@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -62,9 +63,12 @@ public class OrderService {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found"));
 
+        String randomStr = UUID.randomUUID().toString().substring(0, 6).toUpperCase();
+        String trackingNumber = String.format("TRACK-%d-%s", orderId, randomStr);
+        order.setTrackingNumber(trackingNumber);
+
         order.setStatus(OrderStatus.PAID);
 
-        // Update product stock
         order.getItems().forEach(item -> {
             Product product = item.getProduct();
             product.setStockQuantity(product.getStockQuantity() - item.getQuantity());
