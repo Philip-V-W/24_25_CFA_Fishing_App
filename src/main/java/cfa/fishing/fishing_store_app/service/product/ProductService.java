@@ -22,4 +22,5 @@ public interface ProductService {
     CategoryResponse createCategory(CategoryRequest request);
     void deleteCategory(String categoryId);
     CategoryResponse updateCategory(String categoryId, CategoryRequest request);
+    List<ProductResponse> getAllProductsForAdmin();
 }

@@ -97,17 +97,14 @@ public class AdminController {
     }
 
     @PatchMapping("/products/{productId}/toggle-status")
-    public ResponseEntity<ProductResponse> toggleProductStatus(@PathVariable Long productId) {
-        ProductResponse product = productService.getProduct(productId);
-        ProductRequest updateRequest = new ProductRequest();
-        updateRequest.setName(product.getName());
-        updateRequest.setDescription(product.getDescription());
-        updateRequest.setPrice(product.getPrice());
-        updateRequest.setStockQuantity(product.getStockQuantity());
-        updateRequest.setCategory(product.getCategory());
-        updateRequest.setImageUrl(product.getImageUrl());
+    public ResponseEntity<Void> toggleProductStatus(@PathVariable Long productId) {
+        productService.toggleProductStatus(productId);
+        return ResponseEntity.ok().build();
+    }
 
-        return ResponseEntity.ok(productService.updateProduct(productId, updateRequest));
+    @GetMapping("/products")
+    public ResponseEntity<List<ProductResponse>> getAdminProducts() {
+        return ResponseEntity.ok(productService.getAllProductsForAdmin());
     }
 
     @DeleteMapping("/products/{productId}")

@@ -87,7 +87,6 @@ public class ProductServiceImpl implements ProductService {
         productRepository.save(product);
     }
 
-    // Helper methods for mapping between entities and DTOs
     private void mapRequestToProduct(ProductRequest request, Product product) {
         product.setName(request.getName());
         product.setDescription(request.getDescription());
@@ -140,19 +139,12 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public CategoryResponse createCategory(CategoryRequest request) {
-        // Since categories are enum-based, we need to validate if the category already exists
         String normalizedName = request.getName().toUpperCase().replace(" ", "_");
 
         try {
             ProductCategory.valueOf(normalizedName);
             throw new IllegalArgumentException("Category already exists");
         } catch (IllegalArgumentException e) {
-            // This is actually the success case - the category doesn't exist yet
-            // In a real application, you would need to:
-            // 1. Update the ProductCategory enum
-            // 2. Recompile the application
-            // Consider using a database-backed category system instead of enums
-            // for dynamic category management
 
             return CategoryResponse.builder()
                     .id(normalizedName)
@@ -170,18 +162,10 @@ public class ProductServiceImpl implements ProductService {
             throw new ResourceNotFoundException("Category not found: " + categoryId);
         }
 
-        // Check if there are any products in this category
         List<Product> productsInCategory = productRepository.findByCategory(category);
         if (!productsInCategory.isEmpty()) {
             throw new IllegalStateException("Cannot delete category that contains products");
         }
-
-        // Note: Since categories are enum-based, we can't actually delete them
-        // at runtime. In a real application, you would need to:
-        // 1. Update the ProductCategory enum
-        // 2. Recompile the application
-        // Consider using a database-backed category system instead of enums
-        // for dynamic category management
     }
 
     @Override
@@ -195,26 +179,24 @@ public class ProductServiceImpl implements ProductService {
 
         String normalizedNewName = request.getName().toUpperCase().replace(" ", "_");
 
-        // Check if the new name already exists as a different category
         if (!existingCategory.name().equals(normalizedNewName)) {
             try {
                 ProductCategory.valueOf(normalizedNewName);
                 throw new IllegalArgumentException("Category with new name already exists");
             } catch (IllegalArgumentException ignored) {
-                // This is actually the success case - the new name doesn't exist yet
             }
         }
-
-        // Note: Since categories are enum-based, we can't actually update them
-        // at runtime. In a real application, you would need to:
-        // 1. Update the ProductCategory enum
-        // 2. Recompile the application
-        // Consider using a database-backed category system instead of enums
-        // for dynamic category management
 
         return CategoryResponse.builder()
                 .id(existingCategory.name())
                 .name(request.getName())
                 .build();
+    }
+
+    @Override
+    public List<ProductResponse> getAllProductsForAdmin() {
+        return productRepository.findAll().stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
     }
 }
